@@ -1,0 +1,283 @@
+一、线性规划
+
+1.标准型
+minC^Tx
+Ax <= b
+Aeq * x = Beq
+lb <= x <= ub
+
+2.例题和求解
+Eg1 
+max z = 2x1 + 3x2 - 5x3
+x1 + x2 + x3 = 7
+2x1 - 5x2 + x3 >= 10
+x1 + 3x2 + x3 <= 12
+x1,x2,x3 >= 0
+
+c = [2;3;-5];
+a = [-2,5,-1;1,3,1];
+b = [-10;12];
+aeq = [1,1,1];
+beq = 7;
+x = linprog(-c,a,b,aeq,beq,zeros(3,1))
+value = c'*x
+
+Eg2
+minz = 2x1 + 3x2 + x3
+x1 + 4x2 + 2x3 >= 8
+3x1 + 2x2 >= 6
+x1,x2,x3 >= 0
+
+c = [2;3;1];
+a = [-1,-4,-2;-3,-2,0];
+b = [-8;-6];
+x = linprog(c,a,b,[],[],zeros(3,1))
+value = c' * x
+
+
+二、非线性规划
+1.有极值约束
+minf(x)
+Ax<=B
+Aeq * x = Beq
+C(x) <= 0
+Ceq(x) = 0
+Matlab 中的命令是 X=FMINCON(FUN,X0,A,B,Aeq,Beq,LB,UB,NONLCON,OPTIONS) 它的返回值是向量 x，其中 FUN 是用 M 文件定义的函数f(x)；
+X0 是 x的初始值； A,B,Aeq,Beq 定义了线性约束A*X<=B ,Aeq*X=Beq，如果没有线性约束，则 A=[],B=[],Aeq=[],Beq=[]；
+LB 和 UB 是变量 x的下界和上界，如果上界和下界没有约束，则 LB=[]，UB=[]，如果x无下界，则 LB 的各分量都为-inf，如果 x无上界，
+则 UB 的各分量都为 inf；NONLCON 是用 M 文件定义的非线性向量函数C(x) Ceq(x)；OPTIONS 定义了优化参数，可以使用 Matlab 缺省的参数设置。
+
+例题和求解
+Eg1
+minf(x) = x1^2 + x2^2 + x3^2 + 8
+x1^2-x2+x3^2>=0
+x1+x2^2+x3^3<=20
+-x1-x2^2+2=0
+x2+2x3^2=3
+x1,x2,x3>=0
+
+脚本文件
+options=optimset('largescale','off'); 
+[x,y]=fmincon('fun1',rand(3,1),[],[],[],[],zeros(3,1),[], 'fun2', options)
+建立一个函数m文件
+function f= fun1(x)
+f = sum(x.^2)+8;保存
+建立一个函数m文件
+function [g,h] = fun2(x)
+function [g,h] = fun2(x)
+g = [-x(1)^2+x(2)-x(3)^2;x(1) + x(2)^2 + x(3)^3-20];
+h = [-x(1)-x(2)^2 + 2;x(2) + 2 * x(3)^2 - 3];保存
+
+2.无极值约束
+minf(x)
+[X,FVAL]=FMINUNC(FUN,X0,OPTIONS,P1,P2, ...) 其中的返回值 X 是所求得的极小点，FVAL 是函数的极小值，其它返回值的含义参见相 关的帮助。
+FUN 是一个 M 文件，当 FUN 只有一个返回值时，它的返回值是函数 f(x) ； 当 FUN 有两个返回值时，它的第二个返回值是 f(x) 的梯度向量；
+当 FUN 有三个返回 值时，它的第三个返回值是 f(x) 的二阶导数阵（Hessian 阵）。X0 是向量 x的初始值， OPTIONS 是优化参数，可以使用缺省参数。
+P1，P2 是可以传递给 FUN 的一些参数
+
+例题和求解
+Eg1
+方法一、利用梯度
+求函数f(x)=100(x2-x1^2)^2 + (1-x1)^2的最小值
+
+函数fun2文件
+function [f,g] = fun2(x)
+f = 100 * (x(2) - x(1)^2)^2 + (1 - x(1))^2;
+g = [-400 * x(1) * (x(2) - x(1)^2) - 2 * (1 - x(1));200 * (x(2) - x(1)^2)];
+脚本文件
+options=optimset('GradObj','on'); 
+[x,y]=fminunc('fun2',rand(1,2),options)
+
+方法二、利用梯度和海森矩阵
+options=optimset('GradObj','on','Hessian','on'); 
+[x,y]=fminunc('fun2',rand(1,2),options)
+
+function [f,g,h] = fun2(x)
+f = 100 * (x(2) - x(1)^2)^2 + (1 - x(1))^2;
+g = [-400 * x(1) * (x(2) - x(1)^2) - 2 * (1 - x(1));200 * (x(2) - x(1)^2)];
+h = [-400 * x(2) + 1200 * x(1)^2 + 2,-400 * x(1); -400 * x(1),200];
+
+方法三、求函数f(x) = sin(x)+3取最小值时的x值
+函数fun2文件
+function f = fun2(x);
+f = sin(x) + 3;
+脚本文件
+x0 = 2;
+[x,y] = fminsearch(@fun2,x0)
+求得在初值 2 附近的极小点及极小值
+
+三、拉格朗日多项式插值
+
+脚本文件
+x0=[0   3   5   7   9   11   12   13   14  15]; 
+y0=[0  1.2  1.7  2.0  2.1  2.0  1.8  1.2   1.0  1.6]; 
+x=0:0.1:15; 
+y1=lagrange(x0,y0,x);
+plot(x0,y0,'*',x,y1), title('Lagrange') 
+
+名为lagrange的文件
+function y=lagrange(x0,y0,x); 
+n=length(x0);m=length(x);
+for i=1:m    
+    z=x(i);   
+    s=0.0;    
+    for k=1:n       
+        p=1.0;       
+        for j=1:n          
+            if j~=k            
+                p=p*(z-x0(j))/(x0(k)-x0(j));         
+            end
+        end
+        s=p*y0(k)+s;    
+    end
+    y(i)=s;
+end
+ 
+ 
+ 四、MATLAB散乱点插值函数
+　　griddata函数
+　　语法：
+　　ZI = griddata(x,y,z,XI,YI)
+　　[XI,YI,ZI] = griddata(x,y,z,XI,YI)
+　　[...] = griddata(...,method)
+　　[...] = griddata(...,method,options)
+　　说明：
+　　ZI = griddata(x,y,z,XI,YI) 调整形如z = f(x,y)的曲面，使之与非等间距矢量(x,y,z)中的数据吻合。
+    griddata 函数在指定的(XI,YI)点处插补此曲面，生成ZI. 此曲面一定通过这些数据点。 
+    XI 和 YI 通常构成均匀网格(与meshgrid函数生成的相同). XI 可以是行矢量,这种情况下该矢量确定一个具有固定列数的矩阵。
+    与之类似，YI 可以是列矢量，确定一个具有固定行数的矩阵。
+　　[XI,YI,ZI] = griddata(x,y,z,XI,YI) 函数返回与上述矩阵相同的插补后的矩阵ZI。
+    并返回由行矢量XI和列矢量yi形成的矩阵XI 和YI. 后者与meshgrid 函数返回的矩阵相同。
+　　[...] = griddata(...,method)使用规定的插补方法:
+　　'linear' 基于三角形的线性插补法(缺省)
+　　'cubic' 基于三角形的三次插补法
+　　'nearest' 最近邻居插补法
+　　'v4' MATLAB 4 griddata方法。
+　　这些方法定义了匹配数据点的曲面类型。'cubic' 和 'v4' 方法生成平滑曲面，而 'linear' 和 'nearest' 分别具有一阶导数和零阶导数不连续。
+    除'v4' 外所有方法基于数据的三角化。如果方法为[], 则使用缺省的'linear' 方法。
+    
+ Eg1
+x=[129  140  103.5  88  185.5  195  105  157.5  107.5  77  81  162  162  117.5];
+y=[7.5  141.5  23   147  22.5  137.5  85.5  -6.5  -81   3  56.5  -66.5  84 -33.5]; 
+z=-[4     8    6     8    6     8     8     9     9   8    8    9    4    9]; test.txt中
+xi=75:1:200; 
+yi=-50:1:150; 
+zi=griddata(x,y,z,xi,yi','v4') 
+subplot(1,2,1), plot(x,y,'*') 
+subplot(1,2,2), mesh(xi,yi,zi) 
+
+五、曲线拟合
+曲线拟合问题的提法是，已知一组（二维）数据，即平面上的n个点 (xi,yi) ,
+i = 1,2,...n,xi互不相同，寻求一个函数（曲线) y = f(x) 使f(x)在某种准则下与所有数据点最为接近，即曲线拟合得最好。
+
+Eg1
+% 小车时间(xi)和位移关系(yi)关系  
+x = [0 1 2 3 4 5 6  7  8  9];  
+y = [0 2 4 7 8 9 12 14 15 18];  
+  
+%{  
+    subplot(m,n,p) 其中前两个参数 m，n是指将你的图分成 m*n个栅格，  
+    每个栅格用 p 来编号，而编号是按行（横着）编号的，所以，当 m = 2，n = 2时编号规则为  
+  
+        1 | 2  
+        ------  
+        3 | 4  
+  
+    所以subplot(2,2,[1 3])，就说明你这一个子图占据的是 1， 3两个栅格，  
+    而subplot(2,2,2)说明子图仅占据第2个栅格.  
+%}  
+subplot(1,2,1);  
+plot(x,y,'o');  
+% 图形的一些设置  
+xlabel('时间（秒）');  
+ylabel('位移（米）');  
+title('原始数据离散点')    
+%{  
+    grid on：是打开网格  
+    grid off：是关闭网格  
+    而grid是切换两种状态,如果在grid off的状态下,输入grid,相当于grid on  
+    相反,如果在grid on状态下输入grid 等价于grid off  
+%}  
+grid on  
+  
+%{  
+    polyfit函数是matlab中用于进行曲线拟合的一个函数。其数学基础是最小二乘法曲线拟合原理。  
+    曲线拟合：已知离散点上的数据集，即已知在点集上的函数值，构造一个解析函数（其图形为一曲线）使在原离散点上尽可能接近给定的值。  
+    调用方法：polyfit(x,y,n)。用多项式求过已知点的表达式，  
+        其中x为源数据点对应的横坐标，可为行向量、矩阵；  
+            y为源数据点对应的纵坐标，可为行向量、矩阵；  
+            n为你要拟合的阶数，一阶直线拟合，二阶抛物线拟合，并非阶次越高越好，看拟合情况而定。  
+  
+    多项式在x处的值y可用下面程序计算：y=polyval(a,x,m)  
+%}  
+p = polyfit(x,y,1)  
+% 0:0.01:9    起始为0，终点为9，步长0.01  
+x1 = 0:0.01:9;  
+y1 = polyval(p,x1);  
+  
+%x2 = 0:0.01:9;  
+%{  
+    MATLAB中的插值函数为interp1，其调用格式为：  yi= interp1(x,y,xi,'method')             
+    其中x，y为插值点，yi为在被插值点xi处的插值结果；x,y为向量，   
+    'method'表示采用的插值方法，MATLAB提供的插值方法有几种：   
+        'nearest'是最邻近插值， 'linear'线性插值； 'spline'三次样条插值； 'pchip'立方插值．缺省时表示线性插值  
+    注意：所有的插值方法都要求x是单调的，并且xi不能够超过x的范围。  
+%}  
+y2 = interp1(x,y,x2,'pchip');  
+subplot(1,2,2);  
+plot(x1,y1,'k',x2,y2,'r')  
+xlabel('时间（秒）');  
+ylabel('位移（米）');  
+title('黑线为最小二乘法拟合，红色为插值法拟合')    
+grid on  
+
+cftool
+http://blog.csdn.net/skyworth0103/article/details/39254453/
+直接利用里面的功能
+
+六、数据统计描述和分析
+统计已有数据的频数并画出直方图
+clear
+load ('D:\a\bin\test.txt');
+%取所有的行，第1、3、5、7、9列，再将所有的数据变成一列
+high = test(:,1:2:9);high = high(:);
+weight = test(:,2:2:10);weight = weight(:);
+[n1,x1] = hist(high,2);
+%[N,X] = hist(Y,M) 得到数组（行、列均可）Y 的频数表。
+%它将区间[min(Y),max(Y)]等分为 M 份（缺省时 M 设定为 10），N 返回 M 个小区间的频数，X 返回 M 个小区间的中点。 
+[n2,x2] = hist(weight,2);
+subplot(1,2,1);
+%画直方图，缺省10
+hist(high);
+subplot(1,2,2);
+hist(weight)
+
+vh = mean(high)%返回high中的均值
+vw = median(weight)%返回weight中的中位数
+uh = std(high)%返回high的标准差
+uw = var(weight)%返回weight的方差
+m = range(high)%返回high的极差
+%Matlab 中 moment(x,order)返回 x 的 order 阶中心矩，order 为中心矩的阶数。 
+%skewness(x)返回 x 的偏度，kurtosis(x)返回峰度
+%p=normpdf(x,mu,sigma)  均值 mu、标准差 sigma 的正态分布在 x 的密度函数
+%(mu=0，sigma=1 时可缺省),用于在matlab的图（figure）上添加说明什么的
+%gtext（'你想输入的内容'）  前提是已经有图   输入之后打开图  就提示你确定输入位置了
+%pdf 概率密度;cdf 分布函数;inv 分布函数的反函数;stat 均值与方差;rnd 随机数生成 
+x = -6:0.01:6;
+y = normpdf(x);
+z = normpdf(x,0,2);
+plot(x,y,x,z),gtext('N(0,1)'),gtext('N(0,2^2)') ;
+[mu,sigma,muci,sigmaci]=normfit(x) 
+
+七、线性代数简单应用
+Eg1
+求解下列方程组(包括超定方程组)
+2x1+x2-5x3+x4=8
+x1-3x2-6x4=9
+2x2-x3+2x4=-5
+x1+4x2-7x3+6x4=0
+
+format rat 
+a = [2,1,-5,1;1,-3,0,-6;0,2,-1,2;1,4,-7,6];
+b = [8;9;-5;0];
+solution = a\b

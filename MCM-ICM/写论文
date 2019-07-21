@@ -1,0 +1,65 @@
+组成部分
+一、摘要
+论文的最重要的部分
+摘要最后写
+直击论文的主题和要点
+可以添加数字结论增强效果
+摘要最好半张纸，不要超过2/3
+最好合作完成
+二、介绍
+清晰地 
+阐述问题
+需要做什么
+问题的背景
+传统的解决方法
+三、模型
+模型
+解决方案
+比较方法
+被给予某个类型的目标，模型一般以预测某种结果为目的
+四、解决方案
+描述如何解决问题
+必须有超过一个的解决方案
+五、误差分析，评估方案
+六、展示结果
+通过数据支撑结论
+可以通过图片展示数据
+数字以表格的形式展示
+*要有多组测试例子支撑，保证模型的鲁棒性
+七、结论
+先给出最好的结果（用数据比较）
+优缺点
+模型未来的发展和工作
+八、参考文献
+
+增分点：标题 数字 表格 图片
+
+第一页 Control number  Summary
+第二页 Contents
+
+• Summary
+• Introduction
+– Assumptions
+• The Models
+– Coordinate Systems and Deﬁnitions
+• Interpolation Algorithms
+– Method 1 – Proximity – Method 2 – Density Mean – Method 3 – Trilinear Interpolation – Method 4 – Polynomial Interpolation – Method 5 – Hybrid Algorithms
+• Testing and Results
+– Overall Results
+7
+• Strengths and Weaknesses
+• Future Work
+• References and Supporting Data
+
+注意：有分歧时候要综合所有人的意见达到一致，要努力的方向一致，建议7点前交论文
+策略：
+赛前准备：吃的喝的，软件：MATLAB,LaTex
+
+选题：资料，争取9日中午选好题目
+9日下午、晚上、10日建立模型：发现问题，抽象出子问题，区分度比较大的
+11日、12日写论文
+
+1.读题 2018.2.9 3点起床翻译 6点比赛开始前把所有的文章翻译完，借助谷歌翻译（如果可以最好能在理解的时候能够找到不懂的问题的相关资料）
+2.6点-9点定主题 三个人分头找各个的论文和资料，利用百度学术、谷歌学术、万方数据、数苑建模、数学建模QQ群、数学建模、数学中国公众号、往年的题目看看有没有类似的...
+3.9点-晚上8点 模型初步建立，建立的过程中要及时总结
+4.晚上8点-晚上12：30 
