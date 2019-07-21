@@ -1,0 +1,132 @@
+% 清空clear;
+%关闭所有的图像close all
+%矩阵A = [1 2 3;4 5 6;7 8 9]
+%增加列 C = [A,B]; 增加行C=[A;B]
+% 生成10行5列随机矩阵 A = rand(10,5);
+%全零矩阵A = zeros(10,5);
+%引用矩阵元素A(2,3)从1开始
+%引用向量元素 A(2)
+%引用第一行元素A(1,:)  A(1,1:end)
+%引用第一列元素A(:,1)  A(1:end,1)
+%A + B  元素对应相乘A.*B 矩阵相乘A * B
+%在该文件夹下新建一个名为"test"的文本文档，将需要的数据拷贝进去data = load('./test.txt');，注意使用绝对路径
+%生成离散的点x1 = -1:0.1:2 x2 = linspace(-1,2,31)
+
+%曲线 Example
+x = -2:0.1:2;
+y1 = 3 * x.*sin(x.^3);
+y2 = 3 * (x + 1).* cos(x.^2);
+figure %新建一个图形
+plot(x,y1,'r-o');%红色的圆圈
+hold on;%连续画线
+plot(x,y2,'b-*');%蓝色的雪花
+xlabel('x');%x轴名称
+ylabel('y');%y轴名称
+legend('y1','y2');%图例，每条曲线是什么
+
+clear 
+close all
+%三维画图
+x = -pi:0.2:pi;
+[x,y] = meshgrid(x);
+z = sin(2 * y) + sin(2 * x).* cos(2 * y);
+figure;
+plot3(x,y,z);
+title('三维曲线画图plot3()');
+figure;
+mesh(x,y,z);
+title('三维网格画图mesh()');
+figure;
+surf(x,y,z);
+title('三维曲面画图surf()');
+
+建立一个函数m文件
+文件里写
+function f = example(x,y);
+f = cos(x.^2 - 2 * y) + exp(-x.^2).*sin(y);
+脚本文件写
+[x,y] = meshgrid(-5:0.2:5);
+z = example(x,y);
+figure
+surf(x,y,z)
+
+for循环
+for i = 1:1:100
+    y = y + i
+end
+
+
+%将5x5的矩阵中的第一列~第三列删除
+a = rand(5)
+a(:,1:3)=[];
+%结构体
+ student.name = 'Ann Lane';
+ student.num = 123422;
+ student.test = [1 2 23 4 44 2123 12 21]
+A = [1 2 3 4;2 3 4 5;3 4 5 6;1 2 1 0];
+%细胞数组
+c = {A,sum(A),sum(sum(A))}
+celldisp(c)
+x = 0:0.25:5;
+y1 = x.^0.1;
+y2 = x.^0.5;
+y3 = x.^0.8;
+y4 = x.^1.5;
+t = 0:0.001:2*pi;
+hold on 
+plot(3 * cos(t), 3 * sin(t))
+plot(x,y1,'bo',x,y2,'rH-')
+plot(x,y3,'gp--');
+plot(x,y4,'mx-.');
+title('My Title'),xlabel('My X-axis Label'),ylabel('My Y-axis Label');
+text(2,8,'Text for annotation');
+gtext('Text for annotation')
+grid
+%四叶玫瑰线
+x = 0:0.1:2 * pi
+r = cos(2 * x);
+polar(x,r)
+% 随机地产生 20 个数据，再根据这些数据画统计直方图
+x = rand(1,20);
+y = round(20 * x)
+subplot(1,2,1)
+hist(x)
+subplot(1,2,2)
+hist(y)
+%在区间[0,10 * pi]画出参数曲线x = sin(t), y = cos(t), z = t并分别标注
+t = 0:pi / 50:10 * pi;
+plot3(sin(t),cos(t),t)
+xlabel('sin(t)'),ylabel('cos(t)'),zlabel('t')
+%绘制二元函数z=sin(xy)/xy
+x = -3:0.1:3;
+y = -5:0.1;5;
+x1 = ones(size(y')) * x;
+y1 = y' * ones(size(x));
+[x2,y2] = meshgrid(x,y);
+z1 = (sin(x1.*y1) + eps)./(x1.*y1 + eps);
+z2 = (sin(x2.*y2) + eps)./(x2.*y2 + eps);
+subplot(1,2,1),mesh(x1,y1,z1);
+subplot(1,2,2),mesh(x2,y2,z2);
+% 逻辑运算
+a = [1,2,3,4]
+b = [0,1,0,2]
+a&b,a|b,~a,xor(a,b)
+%此函数返回矩阵a的非零元素的行和列的标识，其中i代表行标而j代表列标， 
+%同时，将相应的非零元素的值放于列向量 v 中。 
+a = [0,1;0,2];
+b = zeros(1,5);
+find(a),find(b)
+[i,j,v] = find(a)
+clear
+%找出a中不等于7的元素的位置
+a = [0,5;0,7];
+find(a~=7)
+% 将矩阵 a 中等于 7 的元素的值换成矩阵 c 中相应位置上的元素。 
+a = [0,5;0,7];
+c = rand(2,2);
+a(find(a == 7)) = c(find(a == 7))
+%将矩阵 a 中等于 0 的元素删除
+a = [1,0,5;0,2,7]
+a(find(a == 0)) = []
+b = reshape(a,[2,2])
+b(:,2) = []
